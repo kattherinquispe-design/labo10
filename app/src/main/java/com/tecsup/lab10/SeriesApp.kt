@@ -74,16 +74,61 @@ fun SeriesApp() {
 fun BotonFAB(navController: NavHostController, servicio: SerieApiService) {
     val cbeState by navController.currentBackStackEntryAsState()
     val rutaActual = cbeState?.destination?.route
+
+    // Muestra el FAB cuando la ruta es "series"
     if (rutaActual == "series") {
         FloatingActionButton(
             containerColor = Color.Magenta,
             contentColor = Color.White,
-            onClick = { navController.navigate("serieNuevo") }
+            onClick = {
+                // Navega a la pantalla de creación enviando ID 0
+                navController.navigate("serieNuevo")
+            }
         ) {
             Icon(
                 imageVector = Icons.Filled.Add,
-                contentDescription = "Add"
+                contentDescription = "Agregar Serie"
             )
+        }
+    }
+}
+
+@Composable
+fun Contenido(
+    pv: PaddingValues,
+    navController: NavHostController,
+    servicio: SerieApiService
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(pv)
+    ) {
+        NavHost(
+            navController = navController,
+            startDestination = "inicio"
+        ) {
+            composable("inicio") { ScreenInicio() }
+            composable("series") { ContenidoSeriesListado(navController, servicio) }
+
+            // Ruta exacta para agregar una serie nueva (pasa ID = 0)
+            composable("serieNuevo") {
+                ContenidoSerieEditar(navController, servicio, 0)
+            }
+
+            composable(
+                "serieVer/{id}",
+                arguments = listOf(navArgument("id") { type = NavType.IntType })
+            ) {
+                ContenidoSerieEditar(navController, servicio, it.arguments!!.getInt("id"))
+            }
+
+            composable(
+                "serieDel/{id}",
+                arguments = listOf(navArgument("id") { type = NavType.IntType })
+            ) {
+                ContenidoSerieEliminar(navController, servicio, it.arguments!!.getInt("id"))
+            }
         }
     }
 }
@@ -125,38 +170,5 @@ fun BarraInferior(navController: NavHostController) {
     }
 }
 
-@Composable
-fun Contenido(
-    pv: PaddingValues,
-    navController: NavHostController,
-    servicio: SerieApiService
-) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(pv)
-    ) {
-        NavHost(
-            navController = navController,
-            startDestination = "inicio"
-        ) {
-            composable("inicio") { ScreenInicio() }
-            composable("series") { ContenidoSeriesListado(navController, servicio) }
-            composable("serieNuevo") {
-                ContenidoSerieEditar(navController, servicio, 0)
-            }
-            composable(
-                "serieVer/{id}",
-                arguments = listOf(navArgument("id") { type = NavType.IntType })
-            ) {
-                ContenidoSerieEditar(navController, servicio, it.arguments!!.getInt("id"))
-            }
-            composable(
-                "serieDel/{id}",
-                arguments = listOf(navArgument("id") { type = NavType.IntType })
-            ) {
-                ContenidoSerieEliminar(navController, servicio, it.arguments!!.getInt("id"))
-            }
-        }
-    }
-}
+
+
