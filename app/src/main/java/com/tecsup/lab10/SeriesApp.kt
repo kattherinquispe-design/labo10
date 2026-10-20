@@ -53,7 +53,7 @@ fun ScreenInicio() {
 
 @Composable
 fun SeriesApp() {
-    val urlBase = "http://10.0.2.2:8000/" // Usa 10.0.2.2 para emulador
+    val urlBase = "http://10.0.2.2:8000/"
     val retrofit = Retrofit.Builder()
         .baseUrl(urlBase)
         .addConverterFactory(GsonConverterFactory.create())
